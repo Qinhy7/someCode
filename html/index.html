@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script type="text/javascript" src="js/jquery-3.2.1.min.js" ></script>
+		<script type="text/javascript">
+			$(function(){
+				var da = new Date();
+				var year = da.getFullYear();
+				var month = da.getMonth() + 1;
+				var day = da.getDate();
+				
+				var dayNums = judgeMonthDays(year, month);
+				fillDate(year, month, day, dayNums);
+				fillTime();
+				
+				
+				$("#month").change(function(){
+					$("#month").attr("isChange",true);
+					// 获取选中的日期值
+					changeMonthDay($("#month").val());
+				});
+				
+				$("#day").change(function(){
+					$("#day").attr("isChange",true);
+				});
+				$("#hour").change(function(){
+					$("#hour").attr("isChange",true);
+				});
+			})
+			
+			// 获取时间
+			function getDateTime(){
+				
+				var monthChange = $("#month").attr("isChange");
+				var dayChange = $("#day").attr("isChange");
+				var hourChange = $("#hour").attr("isChange");
+				
+				if("true"==monthChange || "true"==dayChange || "true"==hourChange){// 有选中
+					var month = $("#month").val();
+					var day = $("#day").val();
+					var time = $("#hour").val();
+				
+					alert(month+"月，"+day+"日，"+time+"时");
+				}else{
+					alert("kong");
+				}
+			}
+			
+			
+			// 填写时间
+			function fillTime(){
+				for(var i = 9; i <= 17; i++){
+					$("#hour").append("<option value='"+i+"'>"+i+"</option>");
+				}
+			}
+			
+			
+			// 获得下个月份的天数
+			function getNextMonthDays(day, dayNums){
+				return day + 30 - dayNums;
+			}
+			
+			// 月份修改，显示对应的天数也会修改
+			function changeMonthDay(month){
+				var da = new Date();
+				var year = da.getFullYear();
+				var currentMonth = da.getMonth() + 1;
+				var day = da.getDate();
+				var dayNums = judgeMonthDays(year, currentMonth);
+				
+				if(currentMonth == month){// 显示当月日分
+					// 填写日，从当前日期开始，只显示30天之内当前月份的天数
+					$("#day").empty();
+					for(var i = day; i <= dayNums; i++ ){
+						$("#day").append("<option value='"+i+"'>"+i+"</option>");
+					}
+				}else{ // 显示其他月份
+					// 判断显示到下个月的第几天
+					var nextMonthDay = getNextMonthDays(day, dayNums);
+					// 填写日，从当前日期开始，只显示30天之内当前月份的天数
+					$("#day").empty();
+					for(var i = 1; i <= nextMonthDay; i++ ){
+						$("#day").append("<option value='"+i+"'>"+i+"</option>");
+					}
+				}
+			}
+			
+			
+			// 填充年、月、日     (只显示当前日期往后的30天日期)
+			function fillDate(year, month, day, dayNums){
+				$("#year").text(year);
+				
+				// 判断显示到下个月的第几天
+				var nextMonthDay = getNextMonthDays(day, dayNums);
+				
+				// 填写月份，从当前月份开始    下个月显示的天数为0，不用显示下个月
+				if(nextMonthDay != 0){ // 显示下个月份
+					$("#month").empty();
+					for(var i = month; i <= month + 1; i++){
+						$("#month").append("<option value='"+i+"'>"+i+"</option>");
+					}	
+				}else{ // 显示当前月份
+					$("#month").empty();
+					$("#month").append("<option value='"+month+"'>"+month+"</option>");
+				}
+				
+				// 填写日，从当前日期开始，只显示30天之内当前月份的天数
+				for(var i = day; i <= dayNums; i++ ){
+					$("#day").empty();
+					$("#day").append("<option value='"+i+"'>"+i+"</option>");
+				}
+			}
+			
+			// 判断当前月份的天数
+			function judgeMonthDays(year, month){
+				var dayNums = 0;
+				if(month != 2){ 
+					switch (month){
+						case 1:
+						case 3:
+							dayNums = 31;
+							break;
+						case 4:
+							dayNums = 30;
+							break;
+						case 5:
+							dayNums = 31;
+							break;
+						case 6:
+							dayNums = 30;
+							break;
+						case 7:
+						case 8:
+							dayNums = 31;
+							break;
+						case 9:
+							dayNums = 30;
+							break;
+						case 10:
+							dayNums = 31;
+							break;
+						case 11:
+							dayNums = 30;
+							break;
+						case 12:
+							dayNums = 31;
+							break;
+						default:
+							dayNums = 0;
+					}
+				}else{// 判断是否为闰年
+					if(year%4==0&&year%100!=0||year%400==0){// 闰年
+						dayNums = 29;
+					}else{
+						dayNums = 28;
+					}
+				}
+				return dayNums;
+			}
+		</script>
+	</head>
+	<body>
+		
+		<!--
+        	1、判断当前月份有几天（获取当前日期、进行判断）
+        	2、显示对应的天数（从当天日期开始，只显示当前日期往后的30天日期）
+        		月份从当前月份往后，包括当前月份
+        		修改月份，对应的月份天数也改变
+        -->
+		
+		<div>
+			
+			<div id="">
+				<span>可选日期为30天之内</span>
+			</div>
+			
+			<div id="">
+				<span id="year"></span> 年
+			
+				<select id="month" isChange="false">
+				</select> 月
+				
+				<select id="day" isChange="false">
+				</select> 日
+				
+				<select id="hour" isChange="false">
+				</select> 时
+			</div>
+			
+		</div>
+		
+		<button onclick="getDateTime()">获取时间</button>
+		
+	</body>
+</html>
